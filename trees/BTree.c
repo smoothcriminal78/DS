@@ -3,8 +3,7 @@
 #include <malloc.h>
 #include <math.h> 
 
-#define ORDER (4)
-#define MAX_DEGREE (ORDER-1)
+#define MAX_KEYS (5)
 
 typedef enum { FALSE, TRUE } bool;
 
@@ -14,8 +13,8 @@ struct node
 {
 	bool is_leaf;
 	int numKeys;
-	int keys[MAX_DEGREE];
-	struct node *children[ORDER];
+	int keys[MAX_KEYS];
+	struct node *children[MAX_KEYS+1];
 	struct node *parent;
 };
 
@@ -57,8 +56,8 @@ struct node *split(struct node *ptr)
 	right->is_leaf = ptr->is_leaf;
 	right->numKeys = 0;
 
-	ptr->numKeys = (ORDER / 2) - 1; 
-	for(int i = ptr->numKeys+1; i < MAX_DEGREE; i++)
+	ptr->numKeys = floor(MAX_KEYS / 2);
+	for(int i = ptr->numKeys+1; i < MAX_KEYS; i++)
 	{
 			right->keys[right->numKeys] = ptr->keys[i];
 		ptr->keys[i] = -1;
@@ -68,10 +67,10 @@ struct node *split(struct node *ptr)
 		ptr->children[i] = NULL;
 		right->numKeys++;
 	}
-	right->children[right->numKeys] = ptr->children[MAX_DEGREE];
+	right->children[right->numKeys] = ptr->children[MAX_KEYS];
 	if(right->children[right->numKeys] != NULL)
 		right->children[right->numKeys]->parent = right;
-	ptr->children[MAX_DEGREE] = NULL;
+	ptr->children[MAX_KEYS] = NULL;
 
 	median = (struct node*)malloc(sizeof(struct node));
 	median->is_leaf = FALSE;
@@ -219,7 +218,7 @@ struct node *balance(struct node *ptr)
 		}
 	}
 
-	if(left != NULL && left->numKeys > floor(MAX_DEGREE / 2))
+	if(left != NULL && left->numKeys > floor(MAX_KEYS / 2))
 	{
 		/* printf("Taking from left sibling\n"); */
 		for (int j = ptr->numKeys; j >= 0; j--)
@@ -238,7 +237,7 @@ struct node *balance(struct node *ptr)
 		left->children[left->numKeys] = NULL;
 		left->numKeys--;
 	}
-	else if(right != NULL && right->numKeys > floor(MAX_DEGREE / 2))
+	else if(right != NULL && right->numKeys > floor(MAX_KEYS / 2))
 	{
 		/* printf("Taking from right sibling\n"); */
 		ptr->keys[ptr->numKeys] = parent->keys[pos];
@@ -268,7 +267,7 @@ struct node *balance(struct node *ptr)
 		ptr = merge(parent, pos);
 	}
 
-	if(parent != NULL && parent->numKeys < floor(MAX_DEGREE / 2))
+	if(parent != NULL && parent->numKeys < floor(MAX_KEYS / 2))
 		ptr->parent = balance(parent);
 
 	return ptr;
@@ -325,7 +324,7 @@ struct node *insert(struct node *ptr, int data)
 	else
 		insertKey(ptr, data);
 
-	if(ptr->numKeys == MAX_DEGREE)
+	if(ptr->numKeys == MAX_KEYS)
 		ptr = split(ptr);	
 
 	return ptr;
@@ -348,7 +347,7 @@ struct node *deleteElement(struct node *ptr, int val)
 			{
 				deleteKey(ptr, i);
 
-				if(ptr->parent != NULL && ptr->numKeys < floor(MAX_DEGREE / 2))
+				if(ptr->parent != NULL && ptr->numKeys < floor(MAX_KEYS / 2))
 					ptr = balance(ptr);
 
 				// Rewind to the root element
