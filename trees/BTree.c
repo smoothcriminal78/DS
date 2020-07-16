@@ -389,9 +389,6 @@ int main()
 	int data;
 	int option;
 
-	for (int i = 1; i < 10; i++)
-		root = insert(root, i*10);
-
 	while(1)
 	{
 		printf("1.Insert\n");
