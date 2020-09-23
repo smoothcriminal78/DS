@@ -27,7 +27,7 @@ void display(int n, int lvl)
 		}
 
 		pad(1);
-		printf("%d", heap[0]);
+		printf("%d", heap[1]);
 	}
 	else
 	{
@@ -37,11 +37,11 @@ void display(int n, int lvl)
 		for (int i = parentNum; i < num; i++)
 		{
 			int p1 = 2*i;
-			int p2 = 2*i+1;
+			int p2 = p1+1;
 			pad(num);
-			printf("%d", heap[p1-1]);
+			printf("%d", heap[p1]);
 			pad(num);
-			printf("%d", heap[p2-1]);
+			printf("%d", heap[p2]);
 		}
 	}
 
@@ -53,19 +53,19 @@ void display(int n, int lvl)
 
 void insert(int val, int pos)
 {
-	heap[pos-1] = val;	
+	heap[pos] = val;	
 
 	while(pos > 1)
 	{
 		int par = pos / 2;
 
-		if(heap[pos-1] >= heap[par-1])
+		if(heap[pos] >= heap[par])
 			break;
 		else
 		{
-			int temp = heap[par-1];
-			heap[par-1] = heap[pos-1];
-			heap[pos-1] = temp;
+			int temp = heap[par];
+			heap[par] = heap[pos];
+			heap[pos] = temp;
 			pos = par;
 		}
 	}
@@ -73,35 +73,35 @@ void insert(int val, int pos)
 
 void deleteElement(int n)
 {
-	int last = heap[n-1];
-	heap[n-1] = INT_MAX;
+	int last = heap[n];
+	heap[n] = INT_MAX;
 
 	int ptr = 1;
 	int left = 2;
 	int right = 3;
 
-	heap[ptr-1] = last;
+	heap[ptr] = last;
 	while(left <= n)
 	{
-		if(heap[ptr-1] <= heap[left-1] && heap[ptr-1] <= heap[right-1])
+		if(heap[ptr] <= heap[left] && heap[ptr] <= heap[right])
 			return;
 
-		int temp = heap[ptr-1];
-		if(heap[right-1] >= heap[left-1])
+		int temp = heap[ptr];
+		if(heap[right] >= heap[left])
 		{
-			heap[ptr-1] = heap[left-1];
-			heap[left-1] = temp;
+			heap[ptr] = heap[left];
+			heap[left] = temp;
 			ptr = left;
 		}
 		else
 		{
-			heap[ptr-1] = heap[right-1];
-			heap[right-1] = temp;
+			heap[ptr] = heap[right];
+			heap[right] = temp;
 			ptr = right;
 		}
 
-		left = 2*(ptr+1);
-		right = left;
+		left = 2*ptr;
+		right = left+1;
 	}
 }
 
@@ -132,8 +132,13 @@ int main()
 				insert(data, n);
 				break;
 			case 2:
-				deleteElement(n);
-				n--;
+				if(n > 0)
+				{
+					deleteElement(n);
+					n--;
+				}
+				else
+					printf("Tree is empty!\n");
 				break;
 			case 3:
 				printf("Tree is :\n");
