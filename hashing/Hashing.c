@@ -149,27 +149,6 @@ int h(int val, int n)
 	return val % n;
 }
 
-int *rehashing(int *arr, int n)
-{
-	int *new_arr = (int*) malloc(n * sizeof(int));
-
-	for (int i = 0; i < n*2; i++)
-		new_arr[i] = -1;
-
-	for (int i = 0; i < n; i++)
-	{	
-		if(arr[i] != -1)
-		{
-			int _h = h(arr[i], 2*n);
-			new_arr[_h] = arr[i];
-		}
-	}
-
-	free(arr);
-
-	return new_arr;
-}
-
 int main()
 {
 	/* for (int i = 0; i < M; i++) */
@@ -192,8 +171,8 @@ int main()
 		if(rehash_arr[_h] != -1)
 		{
 			printf("Rehashing\n");
-			rehash_arr = rehashing(rehash_arr, rehash_n);
 			rehash_n *= 2;
+			rehash_arr = (int*) realloc(rehash_arr, rehash_n * sizeof(int));
 			rehash_arr[h(i, rehash_n)] = i;
 			break;
 		}
